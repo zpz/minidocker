@@ -9,4 +9,4 @@ __all__ = [
     'make_datetime_version',
 ]
 
-from ._make_version import make_date_version, make_datetime_version
+from ._util import make_date_version, make_datetime_version
