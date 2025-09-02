@@ -1,0 +1,7 @@
+#!/usr/bin/sh
+
+docker run -it --rm \
+    -v .:/minidocker \
+    -w /minidocker \
+    minidocker:latest bash
+
