@@ -3,5 +3,6 @@
 docker run -it --rm \
     -v .:/minidocker \
     -w /minidocker \
-    minidocker:latest bash
+    -e PYTHONPATH=/minidocker/src \
+    minidocker:dev bash
 

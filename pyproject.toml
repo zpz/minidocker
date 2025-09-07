@@ -22,3 +22,15 @@ dynamic = ['version', 'description']
 [project.urls]
 Source = "https://github.com/zpz/minidocker"
 
+
+[project.optional-dependencies]
+test = [
+    'pytest', 'toml',
+]
+# If your system Python is 3.11 or newer, this package will use the standard module `tomllib`;
+# otherwise you need to install the third-paty module `toml`.
+
+
+[tool.flit.module]
+name = "minidocker"
+data = ["minidocker/githooks/*"]
