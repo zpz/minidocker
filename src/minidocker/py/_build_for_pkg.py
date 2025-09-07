@@ -1,4 +1,3 @@
-import importlib.util
 import os
 import string
 import subprocess
@@ -138,14 +137,26 @@ def build(args):
         # Take a free ride to config githooks.
         # Do this only when in a development branch.
         if not os.path.isfile(".githooks/pre-commit"):
-            pkg_root = importlib.util.find_spec(__name__.split(".")[0]).origin
-            hook_file = os.path.join(
-                os.path.dirname(pkg_root), "githooks", "pre-commit"
-            )
+            # pkg_root = importlib.util.find_spec(__name__.split(".")[0]).origin
+            # hook_file = os.path.join(
+            # os.path.dirname(pkg_root), "githooks", "pre-commit"
+            # )
             try:
                 os.mkdir(".githooks")
             except FileExistsError:
                 pass
-            shutil.copyfile(hook_file, ".githooks/pre-commit")
+            # shutil.copyfile(hook_file, ".githooks/pre-commit")
+            with open(".githooks/pre-commit", "w") as file:
+                file.write("""\
+#!/bin/bash
+
+# Run in a subshell so that directory changes do not take effect for the user.
+(
+    thisfile="${BASH_SOURCE[0]}"
+    cd "$(dirname "${thisfile}")"
+    cd ..
+    bash <(curl -s https://raw.githubusercontent.com/zpz/minidocker/main/src/minidocker/githooks/pre-commit) $@
+)
+""")
             run_command(["chmod", "+x", ".githooks/pre-commit"])
             run_command(["git", "config", "--local", "core.hooksPath", ".githooks/"])
