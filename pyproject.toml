@@ -22,3 +22,13 @@ dynamic = ['version', 'description']
 [project.urls]
 Source = "https://github.com/zpz/minidocker"
 
+
+[project.optional-dependencies]
+test = [
+    'pytest',
+]
+
+
+[tool.flit.module]
+name = "minidocker"
+data = ["minidocker/githooks/*"]
