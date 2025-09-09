@@ -5,11 +5,9 @@ import argparse
 import shutil
 
 
+from .._util import get_project_name, run_command, get_git_branch
 from ._util import (
     parse_pyproject,
-    get_project_name,
-    run_command,
-    get_git_branch,
     get_package_name,
 )
 
