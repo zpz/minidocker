@@ -1,5 +1,6 @@
 import configparser
 import subprocess
+import warnings
 from datetime import datetime, timezone
 
 
@@ -46,10 +47,10 @@ def get_project_name():
     config = configparser.ConfigParser()
     config.read(".git/config")
     url = config['remote "origin"']["url"]
-    pkg = url[url.index("/") :][1:][:-4]
+    pkg = url[url.index("/") :][1:].rstrip(".git")
     if "_" in pkg:
-        raise ValueError(
-            "project name, '{}', contains understore; please use dash instead".format(
+        warnings.warn(
+            "project name, '{}', contains understore; it is recommended to use dash instead".format(
                 pkg
             )
         )

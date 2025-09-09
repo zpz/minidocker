@@ -1,26 +1,8 @@
 import argparse
 import sys
 
-from ._util import make_date_version, make_datetime_version
+from ._util import make_date_version, make_datetime_version, get_project_name
 from ._find_image import find_image, find_local_image, find_remote_image
-
-
-def _find_image(name):
-    z = find_image(name)
-    if z:
-        print(z)
-
-
-def _find_local_image(name):
-    z = find_local_image(name)
-    if z:
-        print(z)
-
-
-def _find_remote_image(name):
-    z = find_remote_image(name)
-    if z:
-        print(z)
 
 
 if __name__ == "__main__":
@@ -34,6 +16,7 @@ if __name__ == "__main__":
     p_find_remote_image.add_argument("remote_image_name")
     p_make_date_version = subparsers.add_parser("make-date-version")
     p_make_date_version = subparsers.add_parser("make-datetime-version")
+    p_get_proj_name = subparsers.add_parser("get-project-name")
     args = parser.parse_args()
 
     cmd = args.subparser
@@ -42,22 +25,24 @@ if __name__ == "__main__":
         if z:
             print(z)
         else:
-            sys.exit(1)
+            sys.exit('Can not find image "%s"' % args.image_name)
     elif cmd == "find-local-image":
         z = find_local_image(args.local_image_name)
         if z:
             print(z)
         else:
-            sys.exit(1)
+            sys.exit('Can not find local image "%s"' % args.local_image_name)
     elif cmd == "find-remote-image":
         z = find_remote_image(args.remote_image_name)
         if z:
             print(z)
         else:
-            sys.exit(1)
+            sys.exit('Can not find remote image "%s"' % args.remote_image_name)
     elif cmd == "make-date-version":
         print(make_date_version())
     elif cmd == "make-datetime-version":
         print(make_datetime_version())
+    elif cmd == "get-project-name":
+        print(get_project_name())
     else:
-        raise ValueError('unknown sub-command "%s"' % cmd)
+        sys.exit('Unknown sub-command "%s"' % cmd)
