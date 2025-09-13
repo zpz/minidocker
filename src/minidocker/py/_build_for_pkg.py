@@ -68,12 +68,13 @@ def build_dev(*, parent, tag):
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument("--parent", required=True, help="full tag of parent image")
-    args = parser.parse_args()
-    return vars(args)
+    args, more_args = parser.parse_known_args(args)
+
+    return vars(args), more_args
 
 
 def build(args):
-    kwargs = parse_args(args)
+    kwargs, extra_args = parse_args(args)
     devimg = PROJ + ":dev"
     build_dev(parent=kwargs["parent"], tag=devimg)
     branch = get_git_branch()
@@ -96,6 +97,7 @@ def build(args):
                 DOCKER_SRCDIR,
                 "-e",
                 "PYTHONPATH=" + DOCKER_SRCDIR + "/src",
+                *extra_args,
                 devimg,
                 "py.test",
                 '--cov="src/{}"'.format(PKG),
