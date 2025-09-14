@@ -68,12 +68,13 @@ def build_dev(*, parent, tag):
 def parse_args(args):
     parser = argparse.ArgumentParser()
     parser.add_argument("--parent", required=True, help="full tag of parent image")
-    args = parser.parse_args()
-    return vars(args)
+    args, more_args = parser.parse_known_args(args)
+
+    return vars(args), more_args
 
 
 def build(args):
-    kwargs = parse_args(args)
+    kwargs, extra_args = parse_args(args)
     devimg = PROJ + ":dev"
     build_dev(parent=kwargs["parent"], tag=devimg)
     branch = get_git_branch()
@@ -96,9 +97,10 @@ def build(args):
                 DOCKER_SRCDIR,
                 "-e",
                 "PYTHONPATH=" + DOCKER_SRCDIR + "/src",
+                *extra_args,
                 devimg,
                 "py.test",
-                '--cov="src/{}"'.format(PKG),
+                "--cov={}".format(PKG),
                 "tests",
             ]
         )
@@ -126,7 +128,7 @@ def build(args):
             run_command(
                 ["docker", "cp", "{}-release:{}/dist".format(PROJ, DOCKER_SRCDIR), "./"]
             )
-            run_command("docker", "rm", PROJ + "-release")
+            run_command(["docker", "rm", PROJ + "-release"])
             print('Release artifacts are saved in "dist/"')
             # Successful release will create a `dist/*.tar.gz` and a `dist/*.whl`.
             # Outside of Docker, upload the package to PyPI by

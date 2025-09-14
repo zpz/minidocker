@@ -3,11 +3,10 @@ import pathlib
 import platform
 import socket
 import subprocess
-import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-from ._util import run_command
+from .._util import run_command
 
 
 def parse_args(args):
@@ -106,7 +105,7 @@ where
     }
 
 
-def run(args):
+def main(args):
     kwargs = parse_args(args)
 
     imagename = kwargs["imagename"]
@@ -279,7 +278,3 @@ def run(args):
     )
 
     run_command(["docker", "run"] + opts + [IMAGENAME, command] + args)
-
-
-if __name__ == "__main__":
-    run(sys.argv[1:])
