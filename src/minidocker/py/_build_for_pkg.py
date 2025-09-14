@@ -100,7 +100,7 @@ def build(args):
                 *extra_args,
                 devimg,
                 "py.test",
-                '--cov="src/{}"'.format(PKG),
+                "--cov={}".format(PKG),
                 "tests",
             ]
         )
