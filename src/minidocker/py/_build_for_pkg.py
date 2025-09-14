@@ -128,7 +128,7 @@ def build(args):
             run_command(
                 ["docker", "cp", "{}-release:{}/dist".format(PROJ, DOCKER_SRCDIR), "./"]
             )
-            run_command("docker", "rm", PROJ + "-release")
+            run_command(["docker", "rm", PROJ + "-release"])
             print('Release artifacts are saved in "dist/"')
             # Successful release will create a `dist/*.tar.gz` and a `dist/*.whl`.
             # Outside of Docker, upload the package to PyPI by
