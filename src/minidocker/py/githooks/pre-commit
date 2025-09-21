@@ -15,7 +15,7 @@ thisfile="${BASH_SOURCE[0]}"
 thisdir="$(cd "$(dirname "${thisfile}")"; pwd)"
 if [[ "$(basename "${thisdir}")" != .githooks ]]; then
     # In this case, this script is not being executed directly;
-    # rather, it is being "sourced" from another repo. The sourcing
+    # rather, it is being "sourced" in another script. The sourcing
     # script should have ensured that `pwd` is the repo's root directory.
     rootdir="$(pwd)"
 else
