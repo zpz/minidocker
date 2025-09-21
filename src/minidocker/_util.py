@@ -31,11 +31,16 @@ def make_datetime_version(sep="-"):
 
 
 def get_git_branch():
+    """
+    This assumes the current working directory is the root directory of the repo.
+    """
     return run_command_for_output(["git", "branch", "--show-current"])
 
 
 def get_project_name():
     """Get the name of the git project, which is usually the name of the parent directory.
+
+    This assumes the current working directory is the root directory of the repo.
 
     In theory, the parent directory can be renamed to be
     different from the name of the `github` repo---the name of the `github` repo is
@@ -47,7 +52,7 @@ def get_project_name():
     config = configparser.ConfigParser()
     config.read(".git/config")
     url = config['remote "origin"']["url"]
-    pkg = url[url.index("/") :][1:].rstrip(".git")
+    pkg = url.split('/')[-1].rstrip('.git')
     if "_" in pkg:
         warnings.warn(
             "project name, '{}', contains understore; it is recommended to use dash instead".format(

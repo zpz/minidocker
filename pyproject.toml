@@ -33,4 +33,4 @@ test = [
 
 [tool.flit.module]
 name = "minidocker"
-data = ["minidocker/githooks/*"]
+data = ["minidocker/py/githooks/*"]

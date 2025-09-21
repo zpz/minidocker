@@ -1,7 +1,7 @@
 import argparse
 import sys
 
-from ._util import make_date_version, make_datetime_version, get_project_name
+from ._util import make_date_version, make_datetime_version, get_project_name, get_git_branch
 from ._find_image import find_image, find_local_image, find_remote_image
 
 
@@ -17,6 +17,7 @@ if __name__ == "__main__":
     p_make_date_version = subparsers.add_parser("make-date-version")
     p_make_date_version = subparsers.add_parser("make-datetime-version")
     p_get_proj_name = subparsers.add_parser("get-project-name")
+    p_get_git_branch = subparsers.add_parser("get-git-branch")
     args = parser.parse_args()
 
     cmd = args.subparser
@@ -44,5 +45,7 @@ if __name__ == "__main__":
         print(make_datetime_version())
     elif cmd == "get-project-name":
         print(get_project_name())
+    elif cmd == "get-git-branch":
+        print(get_git_branch())
     else:
         sys.exit('Unknown sub-command "%s"' % cmd)

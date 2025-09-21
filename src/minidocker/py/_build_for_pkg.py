@@ -155,7 +155,7 @@ def build(args):
     thisfile="${BASH_SOURCE[0]}"
     cd "$(dirname "${thisfile}")"
     cd ..
-    bash <(curl -s https://raw.githubusercontent.com/zpz/minidocker/main/src/minidocker/githooks/pre-commit) $@
+    bash <(curl -s https://raw.githubusercontent.com/zpz/minidocker/main/src/minidocker/py/githooks/pre-commit) $@
 )
 """)
             run_command(["chmod", "+x", ".githooks/pre-commit"])
