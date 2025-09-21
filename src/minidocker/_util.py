@@ -52,7 +52,7 @@ def get_project_name():
     config = configparser.ConfigParser()
     config.read(".git/config")
     url = config['remote "origin"']["url"]
-    pkg = url.split('/')[-1].rstrip('.git')
+    pkg = url.split("/")[-1].rstrip(".git")
     if "_" in pkg:
         warnings.warn(
             "project name, '{}', contains understore; it is recommended to use dash instead".format(

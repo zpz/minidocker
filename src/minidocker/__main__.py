@@ -1,7 +1,12 @@
 import argparse
 import sys
 
-from ._util import make_date_version, make_datetime_version, get_project_name, get_git_branch
+from ._util import (
+    make_date_version,
+    make_datetime_version,
+    get_project_name,
+    get_git_branch,
+)
 from ._find_image import find_image, find_local_image, find_remote_image
 
 

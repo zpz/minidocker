@@ -1,4 +1,4 @@
-'''
+"""
 ``python3 -m minidocker.py build`` builds a Docker image for Python code development in this repo.
 This command handles two scenarios, namely, the repo develops a Python "package" or a Python "project".
 
@@ -9,7 +9,8 @@ In the case of a Python "project", it is assumed that (1) the file ``pyproject.t
 specify **any** dependency; (2) there exists subdirectory ``docker`` under the root of the repo, and
 the subdirectory contains ``Dockerfile`` as well as any dependencies needed for building the Docker image;
 the process of building the Docker image does not make use of anything outside of the subdirectory ``docker``.
-'''
+"""
+
 import argparse
 import sys
 
