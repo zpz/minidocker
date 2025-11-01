@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Run in a subshell so that directory changes do not take effect for the user.
 (
