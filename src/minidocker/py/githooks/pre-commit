@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Install this file as a pre-commit hook,
 # If this script exits with a non-zero status, commit will not proceed.
