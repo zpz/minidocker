@@ -11,7 +11,7 @@ from .._util import run_command
 
 def parse_args(args):
     imagename = None
-    cmd = "/bin/bash"  # the command to be run within the container
+    cmd = "bash"  # the command to be run within the container
     cmdargs = []  # args to `command`
     opts = []  # args to `docker run`
     nb_port = 8888
@@ -91,7 +91,7 @@ where
 `image-name` is either the a source repo name (optionally with appended ":dev") in `~/work/src/` or the full image name (with path and tag).
 
 `cmd` is the command to be run within the container, followed by arguments to the command.
-(Default: /bin/bash)
+(Default: bash)
 """
         raise Exception("image name is missing.\n" + usage)
 

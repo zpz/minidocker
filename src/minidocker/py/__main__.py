@@ -21,13 +21,13 @@ def main(args):
     subcommand, args = parser.parse_known_args(args)
     cmd = subcommand.subcommand
     if cmd == "build":
-        from ._build import main
+        from ._build import main as run
 
-        main(args)
+        run(args)
     elif cmd == "run":
-        from ._run import main
+        from ._run import main as run
 
-        main(args)
+        run(args)
     else:
         sys.exit("Unknown subcommand `%s`" % cmd)
 
