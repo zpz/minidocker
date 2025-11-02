@@ -118,7 +118,7 @@ def main(args):
     nb_port = kwargs["nb_port"]
     gpu_devices = kwargs["gpu_devices"]
 
-    HOSTWORKDIR = str(pathlib.Path.home() / "work")
+    HOSTWORKDIR = pathlib.Path.home() / "work"
     DOCKERHOMEDIR = "/home/docker-user"
     host_user = getpass.getuser()
     host_os = platform.system()
@@ -130,14 +130,13 @@ def main(args):
         # use the local dev image for the repo.
         # The image must have been built previously using
         # the script `run` in the repo directory.
-        if Path(HOSTWORKDIR + "/src/" + imagename).is_dir():
+        if (HOSTWORKDIR / "src" / imagename).is_dir():
             # It is a source repo.
             imagename = imagename + ":dev"
         else:
             raise Exception(
-                'Cannot find source directory "{}/src/{}" for image "{}"'.format(
-                    HOSTWORKDIR,
-                    imagename,
+                'Cannot find source directory "{}" for image "{}"'.format(
+                    HOSTWORKDIR / 'src' / imagename,
                     imagename,
                 )
             )
@@ -149,23 +148,31 @@ def main(args):
         imageversion = "dev"
         PROJ = imagename
 
-        HOSTSRCDIR = HOSTWORKDIR + "/src/" + PROJ
-        if not Path(HOSTWORKDIR).is_dir():
+        HOSTSRCDIR = HOSTWORKDIR / 'src' / PROJ
+        if not HOSTSRCDIR.is_dir():
             raise Exception(
                 'Cannot find source directory "{}" for image "{}:dev"'.format(
-                    HOSTWORKDIR,
+                    HOSTSRCDIR,
                     imagename,
                 )
             )
 
+        DOCKERSRCDIR = f"{DOCKERHOMEDIR}/{PROJ}"
+        if platform.system() == "Windows":
+            # On Windows, convert the path to a form that Docker can understand.
+            d = HOSTSRCDIR.drive
+            p = HOSTSRCDIR.as_posix().lstrip(d)
+            hostsrcdir = f"/{d.rstrip(':').lower()}{p}"
+        else:
+            hostsrcdir = str(HOSTSRCDIR)
         opts.extend(
             [
                 "-v",
-                "{}:{}/{}".format(HOSTSRCDIR, DOCKERHOMEDIR, PROJ),
-                "--workdir={}/{}".format(DOCKERHOMEDIR, PROJ),
+                f"{hostsrcdir}:{DOCKERSRCDIR}",
+                f"--workdir={DOCKERSRCDIR}",
             ]
         )
-        opts.extend(["-e", "PYTHONPATH={}/{}/src".format(DOCKERHOMEDIR, PROJ)])
+        opts.extend(["-e", f"PYTHONPATH={DOCKERSRCDIR}/src"])
     else:
         # `imagename` is the full name.
         IMAGENAME = imagename

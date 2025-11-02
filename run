@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
+MSYS_NO_PATHCONV=1 \  # this is to avoid path conversion on Windows Git Bash
 docker run -it --rm \
-    -v .:/minidocker \
+    -v $(pwd):/minidocker \
     -w /minidocker \
     -e PYTHONPATH=/minidocker/src \
     minidocker:dev bash
