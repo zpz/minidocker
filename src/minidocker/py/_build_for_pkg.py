@@ -148,7 +148,7 @@ def build(args):
             # shutil.copyfile(hook_file, ".githooks/pre-commit")
             with open(".githooks/pre-commit", "w") as file:
                 file.write("""\
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Run in a subshell so that directory changes do not take effect for the user.
 (
