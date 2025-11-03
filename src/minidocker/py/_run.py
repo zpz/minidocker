@@ -107,7 +107,6 @@ where
 
 def main(args):
     kwargs = parse_args(args)
-
     imagename = kwargs["imagename"]
     imageversion = None
     name = ""  # container's name
@@ -160,6 +159,8 @@ def main(args):
         DOCKERSRCDIR = f"{DOCKERHOMEDIR}/{PROJ}"
         if platform.system() == "Windows":
             # On Windows, convert the path to a form that Docker can understand.
+            # See https://www.google.com/search?q=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&oq=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&gs_lcrp=EgRlZGdlKgYIABBFGDkyBggAEEUYOTIHCAEQ6wcYQNIBCTIwMTAzajBqMagCALACAA&sourceid=chrome&ie=UTF-8
+    
             d = HOSTSRCDIR.drive
             p = HOSTSRCDIR.as_posix().lstrip(d)
             hostsrcdir = f"/{d.rstrip(':').lower()}{p}"
