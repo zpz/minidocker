@@ -39,7 +39,8 @@ ENV PARENT_IMAGE=${PARENT}
 COPY --chown=docker-user:docker-user . ${DOCKER_SRCDIR}
 
 RUN pip-install ${DOCKER_SRCDIR}/[${EXTRAS}] \\
-    && python -m pip uninstall -y ${NAME}
+    && python -m pip uninstall -y ${NAME} \\
+    && rm -rf ${DOCKER_SRCDIR}
 
 USER docker-user
 """)

@@ -43,7 +43,7 @@ def parse_args(args):
         elif head == "-p":
             # Port forwarding, e.g.
             #   -p 8080:8080
-            opts.extend([head, args.pop[0]])
+            opts.extend([head, args.pop(0)])
         elif head == "-e":
             # Set env var, e.g.
             #   -e MYNAME=abc
