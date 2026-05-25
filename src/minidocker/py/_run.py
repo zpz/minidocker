@@ -143,9 +143,13 @@ def main(args):
     if imagename.endswith(":dev"):
         # 'dev' is a special tag used by local dev images.
         IMAGENAME = imagename
-        imagename = IMAGENAME.rstrip(":dev")  # remove the ':dev" tag
+        imagename = IMAGENAME[:-4]  # remove the ':dev" tag
         imageversion = "dev"
         PROJ = imagename
+        
+        print('IMAGENAME="{}"'.format(IMAGENAME))
+        print('imagename="{}"'.format(imagename))
+
 
         HOSTSRCDIR = HOSTWORKDIR / 'src' / PROJ
         if not HOSTSRCDIR.is_dir():

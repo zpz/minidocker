@@ -26,7 +26,6 @@ def main(args):
         run(args)
     elif cmd == "run":
         from ._run import main as run
-
         run(args)
     else:
         sys.exit("Unknown subcommand `%s`" % cmd)

@@ -33,7 +33,7 @@ def find_remote_image(name):
     NAME = name
     if ":" in NAME:
         tag = NAME.split(":")[-1]
-        name = NAME.rstrip(":" + tag)
+        name = NAME[:-len(":" + tag)]
         url = "https://hub.docker.com/v2/repositories/{}/tags/{}/".format(name, tag)
         if run_command_for_output(["curl", "--silent", "-f", "--head", "-lL", url]):
             # Exists remotely.
