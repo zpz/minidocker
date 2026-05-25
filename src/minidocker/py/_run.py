@@ -147,10 +147,6 @@ def main(args):
         imageversion = "dev"
         PROJ = imagename
         
-        print('IMAGENAME="{}"'.format(IMAGENAME))
-        print('imagename="{}"'.format(imagename))
-
-
         HOSTSRCDIR = HOSTWORKDIR / 'src' / PROJ
         if not HOSTSRCDIR.is_dir():
             raise Exception(
