@@ -3,13 +3,6 @@ from ._util import run_command_for_output
 
 
 def find_local_image(name):
-    # Find the latest tag of an image on local disk,
-    # assuming tags are sortable.
-    # The sole input is the name of the image, with repository as needed,
-    # e.g.
-    #     debian
-    #     zppz/py3
-
     if ":" in name:
         if run_command_for_output(["docker", "images", "-q", name]):
             # Exists locally.
@@ -25,19 +18,24 @@ def find_local_image(name):
     if "latest" in tags:
         return name + ":latest"
 
-    # Assume tags are named based on datetime; take the latest.
+    # Assume tags are sortable (such as named based on datetime); take the latest.
     return name + ":" + max(tags)
 
 
 def find_remote_image(name):
+    if '/' not in name:
+        # A local image without namespace is not checked remotely, because it is not clear what the default namespace should be.
+        return None
     NAME = name
     if ":" in NAME:
         tag = NAME.split(":")[-1]
         name = NAME[:-len(":" + tag)]
         url = "https://hub.docker.com/v2/repositories/{}/tags/{}/".format(name, tag)
+
         if run_command_for_output(["curl", "--silent", "-f", "--head", "-lL", url]):
             # Exists remotely.
             return NAME
+        return None
 
     url = "https://hub.docker.com/v2/repositories/{}/tags/".format(NAME)
     try:
@@ -61,6 +59,34 @@ def find_remote_image(name):
 
 
 def find_image(name):
+    """
+    Find the latest tag of an image, either locally or remotely,
+    assuming tags are sortable. The recommended tag naming scheme is based on datetime with fixed length,
+    e.g. "2024-06-01" or "2024-06-01T12-00-00".
+    
+    The sole input is the name (i.e. repository) of the image, with namespace as needed,
+    e.g.
+
+        debian
+        zppz/py3
+        
+    A local image does not have to have namespace, whereas a remote image must have namespace.
+    Namespace of "official" images on Docker Hub is "library", e.g. "library/debian"; however,
+    the namespace "library" is not shown in the image name when pulled locally, e.g. "debian" instead of "library/debian".
+    To avoid confusion, we follow this rule: if the input name does not have namespace, it is treated as a local image; also,
+    this function never adds a "default" namespace (e.g. 'library').
+    
+    If the image exists both locally and remotely with different latest tags, the local or remote one with the latest tag is returned.
+
+    If the same latest tag exists both locally and remotely, the local tag is returned.
+
+    If the image exists only locally or remotely, the latest local or remote tag is returned.
+
+    If the name includes a tag, e.g. "debian:latest", then it is checked for existence locally and remotely, and returned if found.
+    
+    If the named image does not exist locally or remotely, `None` is returned.
+    """
+
     tag_local = find_local_image(name)
     tag_remote = find_remote_image(name)
     if tag_local:

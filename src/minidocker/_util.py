@@ -1,5 +1,6 @@
 import configparser
 import subprocess
+import sys
 import warnings
 from datetime import datetime, timezone
 
@@ -9,9 +10,19 @@ def run_command(args, **kwargs):
 
 
 def run_command_for_output(args):
-    return subprocess.run(
-        args, check=True, capture_output=True, text=True
-    ).stdout.rstrip("\n")
+    try:
+        result = subprocess.run(
+            args, check=True, capture_output=True, text=True
+        )
+    except FileNotFoundError as e:
+        print("\nError running command:  %s\nLikely the command is not installed or not in the PATH.\n" % " ".join(args), file=sys.stderr)
+        raise e
+    except subprocess.CalledProcessError as e:
+        # print("\nError running command:  %s" % " ".join(args), file=sys.stderr)
+        # print(e.stderr, file=sys.stderr)
+        # raise e
+        raise RuntimeError("Error running command:  %s\n%s" % (" ".join(args), e.stderr)) from None
+    return result.stdout.rstrip("\n")
 
 
 def make_date_version(sep="."):
