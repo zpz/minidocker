@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# Run this script outside of Docker, in the repo's root directory.
+
 rm -rf dist
 python3 -m build .
 python3 -m twine upload dist/*

@@ -1,17 +1,34 @@
 import configparser
 import subprocess
+import sys
 import warnings
 from datetime import datetime, timezone
 
+class CommandError(RuntimeError):
+    def __init__(self, cmd, err, *args, **kwargs):
+        super().__init__(cmd, err, *args, **kwargs)
+        self.cmd = cmd
+        self.err = err
+        
 
 def run_command(args, **kwargs):
     subprocess.run(args, check=True, **kwargs)
 
 
 def run_command_for_output(args):
-    return subprocess.run(
-        args, check=True, capture_output=True, text=True
-    ).stdout.rstrip("\n")
+    try:
+        result = subprocess.run(
+            args, check=True, capture_output=True, text=True
+        )
+    except FileNotFoundError as e:
+        print("\nError running command:  %s\nLikely the command is not installed or not in the PATH.\n" % " ".join(args), file=sys.stderr)
+        raise e
+    except subprocess.CalledProcessError as e:
+        # print("\nError running command:  %s" % " ".join(args), file=sys.stderr)
+        # print(e.stderr, file=sys.stderr)
+        # raise e
+        raise CommandError(" ".join(args), e.stderr) from None
+    return result.stdout.rstrip("\n")
 
 
 def make_date_version(sep="."):
@@ -52,7 +69,7 @@ def get_project_name():
     config = configparser.ConfigParser()
     config.read(".git/config")
     url = config['remote "origin"']["url"]
-    pkg = url.split("/")[-1].rstrip(".git")
+    pkg = url.split("/")[-1][:-(len(".git"))]
     if "_" in pkg:
         warnings.warn(
             "project name, '{}', contains understore; it is recommended to use dash instead".format(

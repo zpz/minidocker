@@ -43,7 +43,7 @@ def parse_args(args):
         elif head == "-p":
             # Port forwarding, e.g.
             #   -p 8080:8080
-            opts.extend([head, args.pop[0]])
+            opts.extend([head, args.pop(0)])
         elif head == "-e":
             # Set env var, e.g.
             #   -e MYNAME=abc
@@ -107,7 +107,6 @@ where
 
 def main(args):
     kwargs = parse_args(args)
-
     imagename = kwargs["imagename"]
     imageversion = None
     name = ""  # container's name
@@ -144,10 +143,10 @@ def main(args):
     if imagename.endswith(":dev"):
         # 'dev' is a special tag used by local dev images.
         IMAGENAME = imagename
-        imagename = IMAGENAME.rstrip(":dev")  # remove the ':dev" tag
+        imagename = IMAGENAME[:-4]  # remove the ':dev" tag
         imageversion = "dev"
         PROJ = imagename
-
+        
         HOSTSRCDIR = HOSTWORKDIR / 'src' / PROJ
         if not HOSTSRCDIR.is_dir():
             raise Exception(
@@ -160,9 +159,11 @@ def main(args):
         DOCKERSRCDIR = f"{DOCKERHOMEDIR}/{PROJ}"
         if platform.system() == "Windows":
             # On Windows, convert the path to a form that Docker can understand.
+            # See https://www.google.com/search?q=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&oq=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&gs_lcrp=EgRlZGdlKgYIABBFGDkyBggAEEUYOTIHCAEQ6wcYQNIBCTIwMTAzajBqMagCALACAA&sourceid=chrome&ie=UTF-8
+
             d = HOSTSRCDIR.drive
             p = HOSTSRCDIR.as_posix().lstrip(d)
-            hostsrcdir = f"/{d.rstrip(':').lower()}{p}"
+            hostsrcdir = f"//{d.rstrip(':').lower()}{p}"
         else:
             hostsrcdir = str(HOSTSRCDIR)
         opts.extend(

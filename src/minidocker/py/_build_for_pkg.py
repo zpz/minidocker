@@ -8,7 +8,6 @@ import shutil
 from .._util import get_project_name, run_command, get_git_branch
 from ._util import (
     parse_pyproject,
-    get_package_name,
 )
 
 
@@ -17,8 +16,10 @@ DOCKER_SRCDIR = "/tmp/src"
 
 PYPROJECT = parse_pyproject()
 PROJ = get_project_name()
-PKG = get_package_name()
-
+try:
+    PKG = PYPROJECT['tool']['flit']['module']['name']
+except KeyError:
+    PKG = PYPROJECT['project']['name'].lower().replace('-', '_')
 
 def dev_dockerfile(*, parent, docker_srcdir):
     t = string.Template("""\
@@ -39,7 +40,8 @@ ENV PARENT_IMAGE=${PARENT}
 COPY --chown=docker-user:docker-user . ${DOCKER_SRCDIR}
 
 RUN pip-install ${DOCKER_SRCDIR}/[${EXTRAS}] \\
-    && python -m pip uninstall -y ${NAME}
+    && python -m pip uninstall -y ${NAME} \\
+    && rm -rf ${DOCKER_SRCDIR}
 
 USER docker-user
 """)
