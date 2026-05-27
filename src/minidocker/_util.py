@@ -4,6 +4,12 @@ import sys
 import warnings
 from datetime import datetime, timezone
 
+class CommandError(RuntimeError):
+    def __init__(self, cmd, err, *args, **kwargs):
+        super().__init__(cmd, err, *args, **kwargs)
+        self.cmd = cmd
+        self.err = err
+        
 
 def run_command(args, **kwargs):
     subprocess.run(args, check=True, **kwargs)
@@ -21,7 +27,7 @@ def run_command_for_output(args):
         # print("\nError running command:  %s" % " ".join(args), file=sys.stderr)
         # print(e.stderr, file=sys.stderr)
         # raise e
-        raise RuntimeError("Error running command:  %s\n%s" % (" ".join(args), e.stderr)) from None
+        raise CommandError(" ".join(args), e.stderr) from None
     return result.stdout.rstrip("\n")
 
 

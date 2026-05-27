@@ -17,3 +17,5 @@ The submodule `minidocker.py` provides commands related to developing a Python p
 ```
 $ python -m minidocker.py <command> [options]
 ```
+
+For most uses, you should issue the command from the root of your project.
