@@ -17,9 +17,10 @@ DOCKER_SRCDIR = "/tmp/src"
 PYPROJECT = parse_pyproject()
 PROJ = get_project_name()
 try:
-    PKG = PYPROJECT['tool']['flit']['module']['name']
+    PKG = PYPROJECT["tool"]["flit"]["module"]["name"]
 except KeyError:
-    PKG = PYPROJECT['project']['name'].lower().replace('-', '_')
+    PKG = PYPROJECT["project"]["name"].lower().replace("-", "_")
+
 
 def dev_dockerfile(*, parent, docker_srcdir):
     t = string.Template("""\

@@ -22,9 +22,11 @@ def main(args):
     cmd = subcommand.subcommand
     if cmd == "build":
         from ._build import main as run_build
+
         run_build(args)
     elif cmd == "run":
         from ._run import main as run_run
+
         run_run(args)
     else:
         sys.exit("Unknown subcommand `%s`" % cmd)

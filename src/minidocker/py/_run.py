@@ -4,7 +4,6 @@ import platform
 import socket
 import subprocess
 from datetime import datetime, timezone
-from pathlib import Path
 
 from .._util import run_command
 
@@ -135,7 +134,7 @@ def main(args):
         else:
             raise Exception(
                 'Cannot find source directory "{}" for image "{}"'.format(
-                    HOSTWORKDIR / 'src' / imagename,
+                    HOSTWORKDIR / "src" / imagename,
                     imagename,
                 )
             )
@@ -146,8 +145,8 @@ def main(args):
         imagename = IMAGENAME[:-4]  # remove the ':dev" tag
         imageversion = "dev"
         PROJ = imagename
-        
-        HOSTSRCDIR = HOSTWORKDIR / 'src' / PROJ
+
+        HOSTSRCDIR = HOSTWORKDIR / "src" / PROJ
         if not HOSTSRCDIR.is_dir():
             raise Exception(
                 'Cannot find source directory "{}" for image "{}:dev"'.format(
