@@ -1,7 +1,4 @@
-try:
-    import tomllib as toml
-except ImportError:
-    import toml
+import tomllib as toml
 
 
 def parse_pyproject():

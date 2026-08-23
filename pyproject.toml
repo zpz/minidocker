@@ -19,7 +19,6 @@ classifiers = [
 dynamic = ['version', 'description']
 dependencies = [
     "ruff",
-    "toml; python_version < '3.11'",
 ]
 
 [project.urls]

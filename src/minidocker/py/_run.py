@@ -33,6 +33,8 @@ def parse_args(args):
     # For those before, some are parsed; the rest are forwarded to `docker run` as is.
     # For those after, the first is the command to be executed within the container;
     # the rest are arguments to the command.
+    #
+    # TODO: make use of `argparse` to simplify the following.
     while args:
         head = args.pop(0)
         if head == "-v":
@@ -116,46 +118,20 @@ def main(args):
     nb_port = kwargs["nb_port"]
     gpu_devices = kwargs["gpu_devices"]
 
-    HOSTWORKDIR = pathlib.Path.home() / "work"
     DOCKERHOMEDIR = "/home/docker-user"
     host_user = getpass.getuser()
     host_os = platform.system()
     host_ip = socket.gethostbyname(socket.gethostname())
-
-    if ":" not in imagename and "/" not in imagename:
-        # The image name is a single word: no namespace, no tag.
-        # If it is the name of a repo in `~/work/src/`, then
-        # use the local dev image for the repo.
-        # The image must have been built previously using
-        # the script `run` in the repo directory.
-        if (HOSTWORKDIR / "src" / imagename).is_dir():
-            # It is a source repo.
-            imagename = imagename + ":dev"
-        else:
-            raise Exception(
-                'Cannot find source directory "{}" for image "{}"'.format(
-                    HOSTWORKDIR / "src" / imagename,
-                    imagename,
-                )
-            )
 
     if imagename.endswith(":dev"):
         # 'dev' is a special tag used by local dev images.
         IMAGENAME = imagename
         imagename = IMAGENAME[:-4]  # remove the ':dev" tag
         imageversion = "dev"
-        PROJ = imagename
 
-        HOSTSRCDIR = HOSTWORKDIR / "src" / PROJ
-        if not HOSTSRCDIR.is_dir():
-            raise Exception(
-                'Cannot find source directory "{}" for image "{}:dev"'.format(
-                    HOSTSRCDIR,
-                    imagename,
-                )
-            )
+        HOSTSRCDIR = pathlib.Path().resolve()
 
-        DOCKERSRCDIR = f"{DOCKERHOMEDIR}/{PROJ}"
+        DOCKERSRCDIR = f"{DOCKERHOMEDIR}/{HOSTSRCDIR.name}"
         if platform.system() == "Windows":
             # On Windows, convert the path to a form that Docker can understand.
             # See https://www.google.com/search?q=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&oq=docker+run+volume+mapping+does+not+work+in+git-bash+terminal+on+windoes&gs_lcrp=EgRlZGdlKgYIABBFGDkyBggAEEUYOTIHCAEQ6wcYQNIBCTIwMTAzajBqMagCALACAA&sourceid=chrome&ie=UTF-8
@@ -186,7 +162,6 @@ def main(args):
         imagename = imagename[
             : imagename.rfind("/")
         ]  # remove namespace, keeping the last word only
-        PROJ = ""
 
     # `IMAGENAME` is the full name including url, namespace, etc.
     # ${IMAGENAME}=[namespace.../]${imagename}:${imageversion}

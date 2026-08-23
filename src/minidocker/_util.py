@@ -1,4 +1,3 @@
-import configparser
 import subprocess
 import sys
 import warnings
@@ -60,8 +59,6 @@ def get_git_branch():
 def get_project_name():
     """Get the name of the git project, which is usually the name of the parent directory.
 
-    This assumes the current working directory is the root directory of the repo.
-
     In theory, the parent directory can be renamed to be
     different from the name of the `github` repo---the name of the `github` repo is
     recorded in `.git/config` and does not rely on the name of the local parent directory.
@@ -69,9 +66,7 @@ def get_project_name():
 
     This could be different from the "project name" in `pyproject.toml`.
     """
-    config = configparser.ConfigParser()
-    config.read(".git/config")
-    url = config['remote "origin"']["url"]
+    url = run_command_for_output(["git", "config", "--get", "remote.origin.url"])
     pkg = url.split("/")[-1][: -(len(".git"))]
     if "_" in pkg:
         warnings.warn(
