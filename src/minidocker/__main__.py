@@ -23,6 +23,7 @@ if __name__ == "__main__":
     p_make_date_version = subparsers.add_parser("make-datetime-version")
     p_get_proj_name = subparsers.add_parser("get-project-name")
     p_get_git_branch = subparsers.add_parser("get-git-branch")
+    p_run = subparsers.add_parser("run")
     arg, args = parser.parse_known_args()
 
     cmd = arg.subparser
