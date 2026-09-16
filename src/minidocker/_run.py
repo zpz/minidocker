@@ -2,10 +2,9 @@ import getpass
 import pathlib
 import platform
 import socket
-import subprocess
 from datetime import datetime, timezone
 
-from .._util import run_command
+from ._util import run_command
 
 
 def parse_args(args):
@@ -13,14 +12,6 @@ def parse_args(args):
     cmd = "bash"  # the command to be run within the container
     cmdargs = []  # args to `command`
     opts = []  # args to `docker run`
-    nb_port = 8888
-    # gpu_devices=all
-    gpu_devices = None
-
-    # You can specify specific GPUs to use, e.g.
-    # -e NVIDIA_VISIBLE_DEVICES=none
-    # -e NVIDIA_VISIBLE_DEVICES=0,1,3
-    # -e NVIDIA_VISIBLE_DEVICES=all
 
     # To restrict memory usage, do something like
     # --memory=8g
@@ -49,16 +40,7 @@ def parse_args(args):
             # Set env var, e.g.
             #   -e MYNAME=abc
             val = args.pop(0)
-            if head.startswith("NVIDIA_VISIBLE_DEVICES="):
-                gpu_devices = val.lstrip("NVIDIA_VISIBLE_DEVICES=")
-            else:
-                opts.extend([head, val])
-        elif head == "--nb_port":
-            # Port number for Jupyter Notebook.
-            # Use this to avoid "port is being used" error.
-            nb_port = args.pop(0)
-        elif head.startswith("--nb_port="):
-            nb_port = head.lstrip("--nb_port=")
+            opts.extend([head, val])
         elif head.startswith("-"):
             # Every other argument is captured and passed on to `docker run`.
             # For example, if there is an option called `--volume` which sets
@@ -85,7 +67,7 @@ def parse_args(args):
         usage = """\
 Usage:
 
-python3 -m minidocker.py run [options] <image-name>[:tag] [<cmd> [cmd-args]]
+python3 -m minidocker run [options] <image-name>[:tag] [<cmd> [cmd-args]]
 
 where
 
@@ -101,8 +83,6 @@ where
         "cmd": cmd,
         "cmdargs": cmdargs,
         "opts": opts,
-        "nb_port": nb_port,
-        "gpu_devices": gpu_devices,
     }
 
 
@@ -115,8 +95,6 @@ def main(args):
     command = kwargs["cmd"]
     args = kwargs["cmdargs"]  # args to `command`
     opts = kwargs["opts"]  # args to `docker run`
-    nb_port = kwargs["nb_port"]
-    gpu_devices = kwargs["gpu_devices"]
 
     DOCKERHOMEDIR = "/home/docker-user"
     host_user = getpass.getuser()
@@ -144,11 +122,10 @@ def main(args):
         opts.extend(
             [
                 "-v",
-                f"{hostsrcdir}:{DOCKERSRCDIR}",
+                f"{hostsrcdir}/src:{DOCKERSRCDIR}/src",
                 f"--workdir={DOCKERSRCDIR}",
             ]
         )
-        opts.extend(["-e", f"PYTHONPATH={DOCKERSRCDIR}/src"])
     else:
         # `imagename` is the full name.
         IMAGENAME = imagename
@@ -178,10 +155,10 @@ def main(args):
         "/usr/bin/sh",
         "bash",
         "sh",
+        "node",
+        "npm",
         "python",
-        "ptpython",
-        "ptipython",
-        "ipython",
+        "python3",
     ):
         opts.append("-it")
 
@@ -200,18 +177,6 @@ def main(args):
         opts.append("--rm")
         # User did not specify '--restart=' or '-d'
 
-    if gpu_devices is not None:
-        if subprocess.run(["which", "nvidia-smi"]).returncode == 0:
-            opts.extend(
-                [
-                    "--runtime=nvidia",
-                    "-e",
-                    "NVIDIA_VISIBLE_DEVICES={}".format(gpu_devices),
-                ]
-            )
-            # or --gpus=all ?
-            # TODO: look into the option `--gpus` to `docker run`.
-
     opts.extend(
         [
             "-e",
@@ -220,35 +185,6 @@ def main(args):
             "HOST_USER=" + host_user,
             "-e",
             "HOST_IP=" + host_ip,
-        ]
-    )
-
-    if command == "notebook":
-        opts.extend(
-            [
-                "--expose=" + nb_port,
-                "-p",
-                "{}:{}".format(nb_port, nb_port),
-                "-e",
-                "JUPYTER_DATA_DIR={}/tmp/.jupyter/data".format(MOUNTPOINT),
-                "-e",
-                "JUPYTER_RUNTIME_DIR={}/tmp/.jupyter/runtime".format(MOUNTPOINT),
-                "-e",
-                "JUPYTERLAB_WORKSPACES_DIR={}/tmp/.jupyter/workspaces".format(
-                    MOUNTPOINT
-                ),
-                "-e",
-                "JUPYTERLAB_SETTINGS_DIR={}/tmp/.jupyter/settings".format(MOUNTPOINT),
-            ]
-        )
-        # command="jupyter lab --port={} --no-browser --ip=0.0.0.0 --NotebookApp.notebook_dir='{}/{}' --NotebookApp.token=''".format(nb_port, DOCKERHOMEDIR, PROJ)
-        command = "jupyter lab --port={} --no-browser --ip=0.0.0.0 --NotebookApp.token=''".format(
-            nb_port
-        )
-
-    opts.extend(
-        [
-            "--user=docker-user",
             "-e",
             "IMAGE_NAME=" + imagename,
             "-e",

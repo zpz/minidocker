@@ -23,27 +23,27 @@ if __name__ == "__main__":
     p_make_date_version = subparsers.add_parser("make-datetime-version")
     p_get_proj_name = subparsers.add_parser("get-project-name")
     p_get_git_branch = subparsers.add_parser("get-git-branch")
-    args = parser.parse_args()
+    arg, args = parser.parse_known_args()
 
-    cmd = args.subparser
+    cmd = arg.subparser
     if cmd == "find-image":
-        z = find_image(args.image_name)
+        z = find_image(arg.image_name)
         if z:
             print(z)
         else:
-            sys.exit('Can not find image "%s"' % args.image_name)
+            sys.exit('Can not find image "%s"' % arg.image_name)
     elif cmd == "find-local-image":
-        z = find_local_image(args.local_image_name)
+        z = find_local_image(arg.local_image_name)
         if z:
             print(z)
         else:
-            sys.exit('Can not find local image "%s"' % args.local_image_name)
+            sys.exit('Can not find local image "%s"' % arg.local_image_name)
     elif cmd == "find-remote-image":
-        z = find_remote_image(args.remote_image_name)
+        z = find_remote_image(arg.remote_image_name)
         if z:
             print(z)
         else:
-            sys.exit('Can not find remote image "%s"' % args.remote_image_name)
+            sys.exit('Can not find remote image "%s"' % arg.remote_image_name)
     elif cmd == "make-date-version":
         print(make_date_version())
     elif cmd == "make-datetime-version":
@@ -52,5 +52,9 @@ if __name__ == "__main__":
         print(get_project_name())
     elif cmd == "get-git-branch":
         print(get_git_branch())
+    elif cmd == "run":
+        from ._run import main as run
+
+        run(args)
     else:
         sys.exit('Unknown sub-command "%s"' % cmd)
