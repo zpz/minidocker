@@ -9,8 +9,7 @@ from ._util import (
 )
 from ._find_image import find_image, find_local_image, find_remote_image
 
-
-if __name__ == "__main__":
+def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="subparser")
     p_find_image = subparsers.add_parser("find-image")
@@ -59,3 +58,7 @@ if __name__ == "__main__":
         run(args)
     else:
         sys.exit('Unknown sub-command "%s"' % cmd)
+
+
+if __name__ == "__main__":
+    main()

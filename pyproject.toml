@@ -17,18 +17,20 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dynamic = ['version', 'description']
-dependencies = [
-    "ruff",
-]
+dependencies = []
+
 
 [project.urls]
 Source = "https://github.com/zpz/minidocker"
 
 
 [project.optional-dependencies]
-test = [
-    'pytest',
-]
+hooks = ["ruff"]
+test = ['pytest']
+
+
+[project.scripts]
+minidocker = "minidocker.__main__:main"
 
 
 [tool.flit.module]
