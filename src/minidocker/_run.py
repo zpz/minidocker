@@ -9,7 +9,7 @@ from ._util import run_command
 
 def parse_args(args):
     imagename = None
-    cmd = "bash"  # the command to be run within the container
+    cmd = None  # the command to be run within the container
     cmdargs = []  # args to `command`
     opts = []  # args to `docker run`
 
@@ -88,6 +88,7 @@ where
 
 def main(args):
     kwargs = parse_args(args)
+
     imagename = kwargs["imagename"]
     imageversion = None
     name = ""  # container's name
@@ -148,19 +149,19 @@ def main(args):
     MOUNTPOINT = "{}/mnt".format(DOCKERHOMEDIR)
     opts.extend(["--mount", "source={},target={}".format(DATAVOLUME, MOUNTPOINT)])
 
-    if not args and command in (
-        "/bin/bash",
-        "/bin/sh",
-        "/usr/bin/bash",
-        "/usr/bin/sh",
-        "bash",
-        "sh",
-        "node",
-        "npm",
-        "python",
-        "python3",
-    ):
-        opts.append("-it")
+    # if not args and command in (
+    #     "/bin/bash",
+    #     "/bin/sh",
+    #     "/usr/bin/bash",
+    #     "/usr/bin/sh",
+    #     "bash",
+    #     "sh",
+    #     "node",
+    #     "npm",
+    #     "python",
+    #     "python3",
+    # ):
+    #     opts.append("-it")
 
     if not any(v.startswith("--name=") for v in opts):
         # User did not specify a name for the container.
@@ -168,14 +169,6 @@ def main(args):
             host_user, datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
         )
         opts.append("--name={}".format(name))
-
-    if not any(v.startswith("--shm-size=") for v in opts):
-        # User did not specify shared memory size.
-        opts.append("--shm-size=2gb")
-
-    if not any(v.startswith("--restart=") for v in opts) and "-d" not in opts:
-        opts.append("--rm")
-        # User did not specify '--restart=' or '-d'
 
     opts.extend(
         [
@@ -195,4 +188,10 @@ def main(args):
         ]
     )
 
-    run_command(["docker", "run"] + opts + [IMAGENAME, command] + args)
+    cmd = ["docker", "run"] + opts + [IMAGENAME]
+    if command:
+        cmd.extend([command] + args)
+
+    print("command:\n", cmd)
+
+    run_command(cmd)
