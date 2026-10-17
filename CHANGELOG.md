@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 
+## [0.1.9] - in progress
+
+- Require Python 3.12, up from 3.8.
+  There's no particular feature that requires this upgrade, but there's no strong reason to support old versions.
+
+
 ## [0.1.8] - 2026-05-26
 
 - Minor bugs and improvements

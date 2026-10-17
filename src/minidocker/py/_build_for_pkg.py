@@ -3,23 +3,20 @@ import string
 import subprocess
 import argparse
 import shutil
-
-
-from .._util import get_project_name, run_command, get_git_branch
-from ._util import (
-    parse_pyproject,
-)
+from .._util import run_command, run_command_for_output
+from ..project import get_git_branch, get_project_name
+from ._util import parse_pyproject
 
 
 DOCKER_SRCDIR = "/tmp/src"
 # Copy project repo to this location in the image.
 
 PYPROJECT = parse_pyproject()
-PROJ = get_project_name()
 try:
-    PKG = PYPROJECT['tool']['flit']['module']['name']
+    PKG = PYPROJECT["tool"]["flit"]["module"]["name"]
 except KeyError:
-    PKG = PYPROJECT['project']['name'].lower().replace('-', '_')
+    PKG = PYPROJECT["project"]["name"].lower().replace("-", "_")
+
 
 def dev_dockerfile(*, parent, docker_srcdir):
     t = string.Template("""\
@@ -75,8 +72,9 @@ def parse_args(args):
     return vars(args), more_args
 
 
-def build(args):
+def build(args, proj=None):
     kwargs, extra_args = parse_args(args)
+    PROJ = proj or get_project_name()
     devimg = PROJ + ":dev"
     build_dev(parent=kwargs["parent"], tag=devimg)
     branch = get_git_branch()
@@ -161,4 +159,11 @@ def build(args):
 )
 """)
             run_command(["chmod", "+x", ".githooks/pre-commit"])
-            run_command(["git", "config", "--local", "core.hooksPath", ".githooks/"])
+
+            p = run_command_for_output(["git", "rev-parse", "--show-prefix"])
+            run_command(
+                ["git", "config", "--local", "core.hooksPath", p.strip() + ".githooks/"]
+            )
+            # TODO: this will not work if a repo contains multiple Python projects, because
+            # this command can't take multiple paths.
+            # TODO: raise error if githooks is already specified and contradicts with this value
