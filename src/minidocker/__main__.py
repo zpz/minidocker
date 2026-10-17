@@ -1,63 +1,26 @@
 import argparse
 import sys
 
-from ._util import (
-    make_date_version,
-    make_datetime_version,
-    get_project_name,
-    get_git_branch,
-)
-from ._find_image import find_image, find_local_image, find_remote_image
+from . import project, image, version, py
+
 
 def main():
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="subparser")
-    p_find_image = subparsers.add_parser("find-image")
-    p_find_image.add_argument("image_name")
-    p_find_local_image = subparsers.add_parser("find-local-image")
-    p_find_local_image.add_argument("local_image_name")
-    p_find_remote_image = subparsers.add_parser("find-remote-image")
-    p_find_remote_image.add_argument("remote_image_name")
-    p_make_date_version = subparsers.add_parser("make-date-version")
-    p_make_date_version = subparsers.add_parser("make-datetime-version")
-    p_get_proj_name = subparsers.add_parser("get-project-name")
-    p_get_git_branch = subparsers.add_parser("get-git-branch")
-    p_run = subparsers.add_parser("run")
-    arg, args = parser.parse_known_args()
 
-    cmd = arg.subparser
-    if cmd == "find-image":
-        z = find_image(arg.image_name)
-        if z:
-            print(z)
-        else:
-            sys.exit('Can not find image "%s"' % arg.image_name)
-    elif cmd == "find-local-image":
-        z = find_local_image(arg.local_image_name)
-        if z:
-            print(z)
-        else:
-            sys.exit('Can not find local image "%s"' % arg.local_image_name)
-    elif cmd == "find-remote-image":
-        z = find_remote_image(arg.remote_image_name)
-        if z:
-            print(z)
-        else:
-            sys.exit('Can not find remote image "%s"' % arg.remote_image_name)
-    elif cmd == "make-date-version":
-        print(make_date_version())
-    elif cmd == "make-datetime-version":
-        print(make_datetime_version())
-    elif cmd == "get-project-name":
-        print(get_project_name())
-    elif cmd == "get-git-branch":
-        print(get_git_branch())
-    elif cmd == "run":
-        from ._run import main as run
+    image.register(subparsers)
+    project.register(subparsers)
+    version.register(subparsers)
+    py.register(subparsers)
 
-        run(args)
+    arg, extra = parser.parse_known_args()
+    arg.extra = extra
+    
+    if hasattr(arg, 'func'):
+        arg.func(arg)
     else:
-        sys.exit('Unknown sub-command "%s"' % cmd)
+        parser.print_help()
+        sys.exit(1)
 
 
 if __name__ == "__main__":

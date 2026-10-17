@@ -1,3 +1,4 @@
+import sys
 from ._util import run_command_for_output, CommandError
 
 
@@ -102,3 +103,41 @@ def find_image(name):
         return tag_remote
     else:
         return None
+
+
+def _find_image(args):
+    z = find_image(args.image_name)
+    if z:
+        print(z)
+    else:
+        sys.exit('Can not find image "%s"' % args.image_name)
+
+
+def _find_local_image(args):
+    z = find_local_image(args.local_image_name)
+    if z:
+        print(z)
+    else:
+        sys.exit('Can not find local image "%s"' % args.local_image_name)
+
+
+def _find_remote_image(args):
+    z = find_remote_image(args.remote_image_name)
+    if z:
+        print(z)
+    else:
+        sys.exit('Can not find remote image "%s"' % args.remote_image_name)
+
+
+def register(subparsers):
+    p_find_image = subparsers.add_parser("find-image")
+    p_find_image.add_argument("image_name")
+    p_find_image.set_defaults(func=_find_image)
+
+    p_find_local_image = subparsers.add_parser("find-local-image")
+    p_find_local_image.add_argument("local_image_name")
+    p_find_local_image.set_defaults(func=_find_local_image)
+
+    p_find_remote_image = subparsers.add_parser("find-remote-image")
+    p_find_remote_image.add_argument("remote_image_name")
+    p_find_remote_image.set_defaults(func=_find_remote_image)

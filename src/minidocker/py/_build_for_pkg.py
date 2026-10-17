@@ -3,17 +3,9 @@ import string
 import subprocess
 import argparse
 import shutil
-
-
-from .._util import (
-    get_project_name,
-    run_command,
-    run_command_for_output,
-    get_git_branch,
-)
-from ._util import (
-    parse_pyproject,
-)
+from .._util import run_command, run_command_for_output
+from ..project import get_git_branch, get_project_name
+from ._util import parse_pyproject
 
 
 DOCKER_SRCDIR = "/tmp/src"
