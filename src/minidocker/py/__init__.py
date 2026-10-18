@@ -26,13 +26,11 @@ import sys
 def _main(arg):
     parser = argparse.ArgumentParser(prog='minidocker py')
     parser.add_argument("subcommand")
-    parser.add_argument("--proj")
     ns, rest = parser.parse_known_args(arg.extra)
     cmd = ns.subcommand
-    if cmd == "build":
-        from ._build import main as run_build
-
-        run_build(rest, proj=ns.proj)
+    if cmd == 'all-deps':
+        from ._util import all_deps
+        print('\n'.join(all_deps(*rest)))
     else:
         sys.exit("Unknown subcommand `%s`" % cmd)
 
