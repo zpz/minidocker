@@ -85,7 +85,7 @@ def parse_args(args):
         usage = """\
 Usage:
 
-python3 -m minidocker.py run [options] <image-name>[:tag] [<cmd> [cmd-args]]
+minidocker py run [options] <image-name>[:tag] [<cmd> [cmd-args]]
 
 where
 
@@ -229,16 +229,6 @@ def main(args):
                 "--expose=" + nb_port,
                 "-p",
                 "{}:{}".format(nb_port, nb_port),
-                "-e",
-                "JUPYTER_DATA_DIR={}/tmp/.jupyter/data".format(MOUNTPOINT),
-                "-e",
-                "JUPYTER_RUNTIME_DIR={}/tmp/.jupyter/runtime".format(MOUNTPOINT),
-                "-e",
-                "JUPYTERLAB_WORKSPACES_DIR={}/tmp/.jupyter/workspaces".format(
-                    MOUNTPOINT
-                ),
-                "-e",
-                "JUPYTERLAB_SETTINGS_DIR={}/tmp/.jupyter/settings".format(MOUNTPOINT),
             ]
         )
         # command="jupyter lab --port={} --no-browser --ip=0.0.0.0 --NotebookApp.notebook_dir='{}/{}' --NotebookApp.token=''".format(nb_port, DOCKERHOMEDIR, PROJ)
@@ -258,5 +248,7 @@ def main(args):
             "--init",
         ]
     )
+    
+    print('opts: ', opts, '\nimage: ', IMAGENAME, '\ncommand: ', command, '\nargs:\n', args)
 
     run_command(["docker", "run"] + opts + [IMAGENAME, command] + args)

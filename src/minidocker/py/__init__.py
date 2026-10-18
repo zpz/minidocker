@@ -33,10 +33,6 @@ def _main(arg):
         from ._build import main as run_build
 
         run_build(rest, proj=ns.proj)
-    elif cmd == "run":
-        from ._run import main as run_run
-
-        run_run(rest)
     else:
         sys.exit("Unknown subcommand `%s`" % cmd)
 
