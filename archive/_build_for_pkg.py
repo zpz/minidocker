@@ -25,11 +25,7 @@ ENV PARENT_IMAGE=${PARENT}
 # If the repo needs non-Python dependencies, will need a mechanism
 # to insert a block to install other things, or use user-defined Dockerfile.
 
-# Install the package of the current repo along with all its required and optional
-# dependencies. Then, uninstall the project package itself,
-# leaving the dependencies in place. The source code is left in the image in order to run tests;
-# otherwise it will be largely forgotten.
-# Dev and test within the container will use volume-mapped live code.
+# Install all dependencies of the package, but not the package itself.
 
 COPY --chown=docker-user:docker-user . ${DOCKER_SRCDIR}
 
