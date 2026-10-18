@@ -1,10 +1,7 @@
-import os
 import string
-import subprocess
 import argparse
-import shutil
-from .._util import run_command, run_command_for_output
-from ..project import get_git_branch, get_project_name
+from .._util import run_command
+from ..project import get_project_name
 from ._util import parse_pyproject
 
 
@@ -77,93 +74,3 @@ def build(args, proj=None):
     PROJ = proj or get_project_name()
     devimg = PROJ + ":dev"
     build_dev(parent=kwargs["parent"], tag=devimg)
-    branch = get_git_branch()
-    if branch in ("main", "master", "release"):
-        run_command(["bash", ".githooks/pre-commit"])
-        run_command(
-            [
-                "docker",
-                "run",
-                "--rm",
-                "-e",
-                "IMAGE_NAME=" + PROJ,
-                "-e",
-                "IMAGE_VERSION=dev",
-                "-e",
-                "PKG=" + PKG,
-                "-e",
-                "PROJ=" + PROJ,
-                "--workdir",
-                DOCKER_SRCDIR,
-                "-e",
-                "PYTHONPATH=" + DOCKER_SRCDIR + "/src",
-                *extra_args,
-                devimg,
-                "py.test",
-                "--cov={}".format(PKG),
-                "tests",
-            ]
-        )
-        if branch == "release":
-            try:
-                shutil.rmtree("dist")
-            except FileNotFoundError:
-                pass
-            subprocess.run(["docker", "rm", PROJ + "-release"], capture_output=True)
-            run_command(
-                [
-                    "docker",
-                    "run",
-                    "--workdir",
-                    DOCKER_SRCDIR,
-                    "--name",
-                    PROJ + "-release",
-                    devimg,
-                    "python",
-                    "-m",
-                    "build",
-                    ".",
-                ]
-            )
-            run_command(
-                ["docker", "cp", "{}-release:{}/dist".format(PROJ, DOCKER_SRCDIR), "./"]
-            )
-            run_command(["docker", "rm", PROJ + "-release"])
-            print('Release artifacts are saved in "dist/"')
-            # Successful release will create a `dist/*.tar.gz` and a `dist/*.whl`.
-            # Outside of Docker, upload the package to PyPI by
-            #   $ python3 -m twine upload dist/*
-    else:
-        # Take a free ride to config githooks.
-        # Do this only when in a development branch.
-        if not os.path.isfile(".githooks/pre-commit"):
-            # pkg_root = importlib.util.find_spec(__name__.split(".")[0]).origin
-            # hook_file = os.path.join(
-            # os.path.dirname(pkg_root), "githooks", "pre-commit"
-            # )
-            try:
-                os.mkdir(".githooks")
-            except FileExistsError:
-                pass
-            # shutil.copyfile(hook_file, ".githooks/pre-commit")
-            with open(".githooks/pre-commit", "w") as file:
-                file.write("""\
-#!/usr/bin/env bash
-
-# Run in a subshell so that directory changes do not take effect for the user.
-(
-    thisfile="${BASH_SOURCE[0]}"
-    cd "$(dirname "${thisfile}")"
-    cd ..
-    bash <(curl -s https://raw.githubusercontent.com/zpz/minidocker/main/src/minidocker/py/githooks/pre-commit) $@
-)
-""")
-            run_command(["chmod", "+x", ".githooks/pre-commit"])
-
-            p = run_command_for_output(["git", "rev-parse", "--show-prefix"])
-            run_command(
-                ["git", "config", "--local", "core.hooksPath", p.strip() + ".githooks/"]
-            )
-            # TODO: this will not work if a repo contains multiple Python projects, because
-            # this command can't take multiple paths.
-            # TODO: raise error if githooks is already specified and contradicts with this value
