@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
-# Run this script outside of Docker, in the repo's root directory.
+set -e
+rm -rf ./dist
+./run python -m build .
+echo "release artifacts are saved in dist/"
 
-rm -rf dist
-python3 -m build .
-python3 -m twine upload dist/*
+# After successful build, upload the archive to PYPI by
+#  twine upload dist/*
