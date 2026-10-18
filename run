@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 
-# This script is meant to be run from the repo's root directory, landing
-# within a Docker container with the current directory mounted as a volume.
-# This allows ad-hoc test and debugging of the code in `src`.
-#
 # The Docker image used is created by the script `build`.
 
-MSYS_NO_PATHCONV=1 \  # this is to avoid path conversion on Windows Git Bash
+if [[ "$(uname -o)" == "Msys" ]]; then
+    export MSYS2_ARG_CONV_EXCL='*'
+fi
+
 docker run -it --rm \
     -v $(pwd):/minidocker \
     -w /minidocker \
     -e PYTHONPATH=/minidocker/src \
-    minidocker:dev bash
+    minidocker:dev $@
+
 
