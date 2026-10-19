@@ -1,12 +1,12 @@
 import sys
-from ._util import run_command_for_output, CommandError
+
+from ._util import CommandError, run_command_for_output
 
 
 def find_local_image(name):
-    if ":" in name:
-        if run_command_for_output(["docker", "images", "-q", name]):
-            # Exists locally.
-            return name
+    if ":" in name and run_command_for_output(["docker", "images", "-q", name]):
+        # Exists locally.
+        return name
 
     tags = run_command_for_output(
         ["docker", "image", "ls", name, "--format", '"{{.Tag}}"']
@@ -29,7 +29,7 @@ def find_remote_image(name):
     if ":" in NAME:
         tag = NAME.split(":")[-1]
         name = NAME[: -len(":" + tag)]
-        url = "https://hub.docker.com/v2/repositories/{}/tags/{}/".format(name, tag)
+        url = f"https://hub.docker.com/v2/repositories/{name}/tags/{tag}/"
 
         try:
             if run_command_for_output(["curl", "--silent", "-f", "--head", "-lL", url]):
@@ -40,7 +40,7 @@ def find_remote_image(name):
                 return None
             raise
 
-    url = "https://hub.docker.com/v2/repositories/{}/tags/".format(NAME)
+    url = f"https://hub.docker.com/v2/repositories/{NAME}/tags/"
     try:
         tags = run_command_for_output(["curl", "--silent", "-f", "-lL", url])
     except CommandError as e:
@@ -110,7 +110,7 @@ def _find_image(args):
     if z:
         print(z)
     else:
-        sys.exit('Can not find image "%s"' % args.image_name)
+        sys.exit(f'Can not find image "{args.image_name}"')
 
 
 def _find_local_image(args):
@@ -118,7 +118,7 @@ def _find_local_image(args):
     if z:
         print(z)
     else:
-        sys.exit('Can not find local image "%s"' % args.local_image_name)
+        sys.exit(f'Can not find local image "{args.local_image_name}"')
 
 
 def _find_remote_image(args):
@@ -126,18 +126,24 @@ def _find_remote_image(args):
     if z:
         print(z)
     else:
-        sys.exit('Can not find remote image "%s"' % args.remote_image_name)
+        sys.exit(f'Can not find remote image "{args.remote_image_name}"')
 
 
 def register(subparsers):
-    p_find_image = subparsers.add_parser("find-image", help="Find an image locally or remotely")
+    p_find_image = subparsers.add_parser(
+        "find-image", help="Find an image locally or remotely"
+    )
     p_find_image.add_argument("image_name")
     p_find_image.set_defaults(func=_find_image)
 
-    p_find_local_image = subparsers.add_parser("find-local-image", help="Find a local image")
+    p_find_local_image = subparsers.add_parser(
+        "find-local-image", help="Find a local image"
+    )
     p_find_local_image.add_argument("local_image_name")
     p_find_local_image.set_defaults(func=_find_local_image)
 
-    p_find_remote_image = subparsers.add_parser("find-remote-image", help="Find a remote image")
+    p_find_remote_image = subparsers.add_parser(
+        "find-remote-image", help="Find a remote image"
+    )
     p_find_remote_image.add_argument("remote_image_name")
     p_find_remote_image.set_defaults(func=_find_remote_image)

@@ -16,18 +16,15 @@ def run_command(args, **kwargs):
 def run_command_for_output(args):
     try:
         result = subprocess.run(args, check=True, capture_output=True, text=True)
-    except FileNotFoundError as e:
+    except FileNotFoundError:
         print(
-            "\nError running command:  %s\nLikely the command is not installed or not in the PATH.\n"
-            % " ".join(args),
+            f"\nError running command:  {' '.join(args)}\nLikely the command is not installed or not in the PATH.\n",
             file=sys.stderr,
         )
-        raise e
+        raise
     except subprocess.CalledProcessError as e:
         # print("\nError running command:  %s" % " ".join(args), file=sys.stderr)
         # print(e.stderr, file=sys.stderr)
         # raise e
         raise CommandError(" ".join(args), e.stderr) from None
     return result.stdout.rstrip("\n")
-
-
