@@ -1,5 +1,5 @@
-import argparse
 import sys
+import argparse
 
 from . import project, image, version, py
 
