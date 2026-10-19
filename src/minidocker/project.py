@@ -24,9 +24,7 @@ def get_project_name():
     pkg = url.split("/")[-1][: -(len(".git"))]
     if "_" in pkg:
         warnings.warn(
-            "project name, '{}', contains understore; it is recommended to use dash instead".format(
-                pkg
-            )
+            f"project name, '{pkg}', contains understore; it is recommended to use dash instead"
         )
     return pkg
 
@@ -40,8 +38,12 @@ def _get_git_branch(args):
 
 
 def register(subparsers):
-    p_get_project_name = subparsers.add_parser("get-project-name", help="Get the name of the project")
+    p_get_project_name = subparsers.add_parser(
+        "get-project-name", help="Get the name of the project"
+    )
     p_get_project_name.set_defaults(func=_get_project_name)
 
-    p_get_git_branch = subparsers.add_parser("get-git-branch", help="Get the Git branch currently in")
+    p_get_git_branch = subparsers.add_parser(
+        "get-git-branch", help="Get the Git branch currently in"
+    )
     p_get_git_branch.set_defaults(func=_get_git_branch)
