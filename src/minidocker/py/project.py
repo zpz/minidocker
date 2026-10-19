@@ -1,13 +1,8 @@
-import sys
 import tomllib as toml
 
 
-def parse_pyproject(path: str = None):
-    return toml.load(open(path or "pyproject.toml", "rb"))
-
-
 def all_deps(path=None):
-    data = parse_pyproject(path)
+    data = toml.load(open(path or "pyproject.toml", "rb"))
 
     project = data.get("project", {})
     deps = []
@@ -21,3 +16,14 @@ def all_deps(path=None):
         deps.extend(group_deps)
 
     return deps
+
+
+def _all_deps(args):
+    deps = all_deps(args.path)
+    print('\n'.join(deps))
+
+    
+def register(subparsers):
+    p_all_deps = subparsers.add_parser("all-deps", help="Retrieve all dependencies from the package's pyproject.toml")
+    p_all_deps.add_argument("path", nargs='?')
+    p_all_deps.set_defaults(func=_all_deps)

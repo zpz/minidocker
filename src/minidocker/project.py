@@ -40,8 +40,8 @@ def _get_git_branch(args):
 
 
 def register(subparsers):
-    p_get_project_name = subparsers.add_parser("get-project-name")
+    p_get_project_name = subparsers.add_parser("get-project-name", help="Get the name of the project")
     p_get_project_name.set_defaults(func=_get_project_name)
 
-    p_get_git_branch = subparsers.add_parser("get-git-branch")
+    p_get_git_branch = subparsers.add_parser("get-git-branch", help="Get the Git branch currently in")
     p_get_git_branch.set_defaults(func=_get_git_branch)
