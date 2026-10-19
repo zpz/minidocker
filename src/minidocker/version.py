@@ -26,8 +26,8 @@ def _make_datetime_version(args):
 
 
 def register(subparsers):
-    p_make_date_version = subparsers.add_parser("make-date-version")
+    p_make_date_version = subparsers.add_parser("make-date-version", help="Construct a version string based on date")
     p_make_date_version.set_defaults(func=_make_date_version)
 
-    p_make_datetime_version = subparsers.add_parser("make-datetime-version")
+    p_make_datetime_version = subparsers.add_parser("make-datetime-version", help="Construct a version string based on date and time")
     p_make_datetime_version.set_defaults(func=_make_datetime_version)

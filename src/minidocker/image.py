@@ -130,14 +130,14 @@ def _find_remote_image(args):
 
 
 def register(subparsers):
-    p_find_image = subparsers.add_parser("find-image")
+    p_find_image = subparsers.add_parser("find-image", help="Find an image locally or remotely")
     p_find_image.add_argument("image_name")
     p_find_image.set_defaults(func=_find_image)
 
-    p_find_local_image = subparsers.add_parser("find-local-image")
+    p_find_local_image = subparsers.add_parser("find-local-image", help="Find a local image")
     p_find_local_image.add_argument("local_image_name")
     p_find_local_image.set_defaults(func=_find_local_image)
 
-    p_find_remote_image = subparsers.add_parser("find-remote-image")
+    p_find_remote_image = subparsers.add_parser("find-remote-image", help="Find a remote image")
     p_find_remote_image.add_argument("remote_image_name")
     p_find_remote_image.set_defaults(func=_find_remote_image)

@@ -5,8 +5,8 @@ from . import project, image, version, py
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    subparsers = parser.add_subparsers(dest="subparser")
+    parser = argparse.ArgumentParser(prog='minidocker')
+    subparsers = parser.add_subparsers(dest="subparser", metavar='<command>')
 
     image.register(subparsers)
     project.register(subparsers)
