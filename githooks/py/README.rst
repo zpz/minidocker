@@ -1,7 +1,7 @@
 Usually, you set up the pre-commit Git hooks in the following steps:
 
 1. In the Python project's root directory, create subdirectory `.githooks` with file `pre-commit`;
-copy the content of this repo's <pre-commit>(../../.githooks/pre-commit), or run that script directly:
+copy the content of this repo's [pre-commit](../../.githooks/pre-commit), or run that script directly:
 
 ::
 
